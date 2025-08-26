@@ -18,3 +18,4 @@ COPY --from=builder /opt/keycloak/ /opt/keycloak/
 RUN chmod +x /opt/keycloak/bin/kc.sh
 
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
+CMD ["start", "--http-port=$PORT", "--hostname-strict=false", "--proxy=edge"]
