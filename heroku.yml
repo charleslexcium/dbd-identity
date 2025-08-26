@@ -3,4 +3,4 @@ build:
     web: Dockerfile
 
 run:
-  web: /opt/keycloak/bin/kc.sh start --http-port=$PORT --hostname-strict=false --proxy=edge
+  web: start --http-port=$PORT --hostname-strict=false --proxy=edge
