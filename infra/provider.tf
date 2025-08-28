@@ -11,5 +11,5 @@ provider "keycloak" {
   client_id     = "admin-cli"
   username      = "admin"
   password      = "adminpassword"
-  url           = "http://localhost:8080"
+  url           = "http://localhost:80"
 }

@@ -1,0 +1,26 @@
+# syntax = docker/dockerfile:1.2
+
+FROM golang:1.24.3-alpine AS build
+
+COPY main.go /go/src/identity/main.go
+
+WORKDIR /go/src/identity
+
+RUN apk add git
+
+RUN GOCACHE=OFF
+
+RUN GO111MODULE=on go mod init
+RUN GO111MODULE=on go mod tidy
+RUN GO111MODULE=on go get -u
+
+RUN go build -o identity .
+
+FROM golang:1.24.3-alpine
+
+WORKDIR /go/src/identity
+COPY --from=build /go/src/identity/identity ./
+
+EXPOSE $PORT
+
+ENTRYPOINT ["/go/src/identity/identity"]

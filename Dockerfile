@@ -1,21 +1,11 @@
-FROM quay.io/keycloak/keycloak:latest AS builder
+FROM docker.io/bitnami/keycloak:26.2.5
 
-# Enable health and metrics support
-ENV KC_HEALTH_ENABLED=true
-ENV KC_METRICS_ENABLED=true
+COPY keycloak_data/keycloak-events-0.46.jar /opt/bitnami/keycloak/providers/keycloak-events-0.46.jar
+COPY keycloak_data/sample-event-listener.jar /opt/bitnami/keycloak/providers/sample-event-listener.jar
 
-# Configure a database vendor
-ENV KC_DB=postgres
+EXPOSE 8080 8443 9000
 
-WORKDIR /opt/keycloak
-# for demonstration purposes only, please make sure to use proper certificates in production instead
-RUN keytool -genkeypair -storepass password -storetype PKCS12 -keyalg RSA -keysize 2048 -dname "CN=server" -alias server -ext "SAN:c=DNS:localhost,IP:127.0.0.1" -keystore conf/server.keystore
-RUN /opt/keycloak/bin/kc.sh build
+USER 1001
 
-FROM quay.io/keycloak/keycloak:latest
-COPY --from=builder /opt/keycloak/ /opt/keycloak/
-
-RUN chmod +x /opt/keycloak/bin/kc.sh
-
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
-CMD ["start", "--http-port=$PORT", "--hostname-strict=false", "--proxy=edge"]
+ENTRYPOINT [ "/opt/bitnami/scripts/keycloak/entrypoint.sh" ]
+CMD [ "/opt/bitnami/scripts/keycloak/run.sh" ]

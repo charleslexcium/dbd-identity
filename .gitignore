@@ -1,0 +1,5 @@
+*_data
+.env
+.terraform.lock.hcl
+.terraform
+infra/terraform.tfstate*

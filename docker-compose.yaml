@@ -1,0 +1,69 @@
+version: '2'
+services:
+  keycloak:
+    image: keycloak:local
+    environment:
+      - KEYCLOAK_DATABASE_HOST=db
+      - KEYCLOAK_DATABASE_PORT_NUMBER=5544
+      - KEYCLOAK_DATABASE_TYPE=postgresql
+      - KEYCLOAK_DATABASE_USER=postgres
+      - KEYCLOAK_DATABASE_PASSWORD=
+      - KEYCLOAK_DATABASE_NAME=postgres
+      - KEYCLOAK_CREATE_ADMIN_USER=true
+      - KEYCLOAK_EXTRA_ARGS="-Dkeycloak.profile.feature.scripts=enabled"
+      - KEYCLOAK_EXTRA_ARGS_PREPENDED=--spi-events-listener-ext-event-http-target-uri=http://identity:9090/auth/event
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=adminpassword
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_LOG_LEVEL=INFO
+      # - KEYCLOAK_ADMIN=admin
+      # - KEYCLOAK_ADMIN_PASSWORD=adminpassword
+    ports:
+      - 80:8080
+    depends_on:
+      - db
+    networks:
+      - localnetwork
+
+  db:
+    image: bitnami/postgresql:latest
+    ports:
+      - "5544:5432"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - localnetwork
+
+  identity:
+    image: identity:local
+    ports:
+      - "9090:9090"
+    networks:
+      - localnetwork
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: mailpit
+    restart: unless-stopped
+    ports:
+      - 8025:8025
+      - 1025:1025
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATABASE: /data/mailpit.db
+      # MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+      MP_SMTP_AUTH: tom:password
+    volumes:
+      - ./mailpit_data:/data
+    networks:
+      - localnetwork
+    
+volumes:
+  db_data:
+    driver: local
+  mailpit_data:
+    driver: local
+
+networks:
+  localnetwork:
+    driver: bridge
