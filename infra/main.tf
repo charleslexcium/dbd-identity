@@ -178,7 +178,7 @@ resource "keycloak_user" "user_with_initial_password" {
   }
 
   required_actions = [
-    "UPDATE_PASSWORD",
+    # "UPDATE_PASSWORD",
   ]
 }
 

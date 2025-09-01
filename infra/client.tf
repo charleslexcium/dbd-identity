@@ -1,7 +1,7 @@
-resource "keycloak_openid_client" "dbd" {
+resource "keycloak_openid_client" "dbd_web" {
   realm_id            = keycloak_realm.realm.id
-  client_id           = "dbd"
-  name                = "Day By Day"
+  client_id           = uuid()
+  name                = "Day By Day - Web"
   enabled             = true
 
   access_type         = "PUBLIC"
@@ -15,6 +15,28 @@ resource "keycloak_openid_client" "dbd" {
 
   web_origins = [
     "http://localhost:3000"
+  ]
+}
+
+resource "keycloak_openid_client" "dbd_backend" {
+  realm_id            = keycloak_realm.realm.id
+  client_id           = uuid()
+  name                = "Day By Day - Backend"
+  enabled             = true
+
+  access_type         = "CONFIDENTIAL"
+  standard_flow_enabled = true
+  implicit_flow_enabled = false
+  direct_access_grants_enabled = true
+  oauth2_device_authorization_grant_enabled = true
+
+  # Redirect URIs
+  valid_redirect_uris = [
+    "http://localhost:3000/*"
+  ]
+
+  web_origins = [
+    "*"
   ]
 }
 
